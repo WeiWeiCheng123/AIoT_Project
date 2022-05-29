@@ -21,22 +21,30 @@ void loop() {
     Serial.println("wake");
     delay(500);
   }
-  
   if (Serial.available()) {
     str = Serial.readStringUntil('\n');
-
-    if (str == "0") {
+    
+    if (str[0] == '0') {
       //c = Serial.readStringUntil('\n');
       analogWrite(red, 255);
       analogWrite(green, 255);
       analogWrite(blue, 0);
+      int n = 0;
+      int num = int(str[2]) - 48;
+      while (n != num) {
+        if (digitalRead(counter) == HIGH) {
+          n++;
+          Serial.println(n);
+          delay(500);
+        }
+      }
       Serial.println("皮卡丘" + c);
-    } else if (str == "1") {
+    } else if (str[0] == '1') {
       analogWrite(red, 255);
       analogWrite(green, 0);
       analogWrite(blue, 0);
       Serial.println("小火龍");
-    } else if (str == "2") {
+    } else if (str[0] == '2') {
       analogWrite(red, 0);
       analogWrite(green, 255);
       analogWrite(blue, 0);

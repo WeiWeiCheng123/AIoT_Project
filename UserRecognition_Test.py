@@ -24,7 +24,7 @@ model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
 model.eval()
 
 User = {}
-User[0] = ['a1', 'b3']
+User[0] = ['a4', 'b3']
 User[1] = ['a2', 'b1']
 User[2] = ['a3', 'b2']
 
@@ -39,40 +39,47 @@ if __name__ == '__main__':
     try:
         while True:
             wake = False
-            cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-            while True:
-                ret, frame = cap.read()
-                cv2.imshow('frame', frame)
-                key = cv2.waitKey(1)
-                while s.in_waiting:
-                    data = s.readline().rstrip().decode()
-                    if data == 'wake':
-                        wake = True                        
-                if wake:
-                    keyboard.press('a')
-                if key == ord('a'):
-                    print('capture')
-                    keyboard.release('a')
-                    break
-            cap.release()
-            cv2.destroyAllWindows()
-            img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-            image = image_loader(img)
-            outputs = model(image).argmax(dim=-1).item()
-            print('user', outputs)
-            print(User[outputs])
-            if outputs == 0:
-                s.write(b'0\n')
-                sleep(0.5)
-            if outputs == 1:
-                s.write(b'1\n')
-                sleep(0.5)
-            if outputs == 2:
-                s.write(b'2\n')
-                sleep(0.5)
             while s.in_waiting:
-                data = s.readline().decode()
-                print('arduino = ', data)
+                data = s.readline().rstrip().decode()
+                if data == 'wake':
+                    wake = True
+                else:
+                    print('arduino = ', data)
+            while wake:
+                wake = False
+                cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+                while True:
+                    ret, frame = cap.read()
+                    cv2.imshow('frame', frame)
+                    key = cv2.waitKey(1)
+                    while s.in_waiting:
+                        data = s.readline().rstrip().decode()
+                        if data == 'wake':
+                            wake = True                        
+                    if wake:
+                        keyboard.press('a')
+                    if key == ord('a'):
+                        print('capture')
+                        keyboard.release('a')
+                        break
+                cap.release()
+                cv2.destroyAllWindows()
+                wake = False
+                img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+                image = image_loader(img)
+                outputs = model(image).argmax(dim=-1).item()
+                print('user', outputs)
+                print(User[outputs])
+                if outputs == 0:
+                    d = str(outputs) + str(User[outputs][0]) + '\n'
+                    s.write(str.encode(d))
+                    sleep(0.5)
+                if outputs == 1:
+                    s.write(b'1\n')
+                    sleep(0.5)
+                if outputs == 2:
+                    s.write(b'2\n')
+                    sleep(0.5)
 
     except KeyboardInterrupt:
         s.close()
