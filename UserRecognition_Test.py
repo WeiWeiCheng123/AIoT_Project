@@ -63,7 +63,7 @@ if __name__ == '__main__':
             print(User[outputs])
             if outputs == 0:
                 s.write(b'0\n')
-                sleep(0.5)          
+                sleep(0.5)
             if outputs == 1:
                 s.write(b'1\n')
                 sleep(0.5)
