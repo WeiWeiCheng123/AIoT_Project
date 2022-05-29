@@ -23,6 +23,11 @@ model = Net()
 model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
 model.eval()
 
+User = {}
+User[0] = ['a1', 'b3']
+User[1] = ['a2', 'b1']
+User[2] = ['a3', 'b2']
+
 
 def image_loader(x):
     img = transform(x).float()
@@ -54,7 +59,8 @@ if __name__ == '__main__':
             img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
             image = image_loader(img)
             outputs = model(image).argmax(dim=-1).item()
-            print('label = ', outputs)
+            print('user', outputs)
+            print(User[outputs])
             if outputs == 0:
                 s.write(b'0\n')
                 sleep(0.5)          
