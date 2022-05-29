@@ -49,13 +49,13 @@ if __name__ == '__main__':
                 wake = False
                 cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
                 while True:
-                    ret, frame = cap.read()
+                    _, frame = cap.read()
                     cv2.imshow('frame', frame)
                     key = cv2.waitKey(1)
                     while s.in_waiting:
                         data = s.readline().rstrip().decode()
                         if data == 'wake':
-                            wake = True                        
+                            wake = True
                     if wake:
                         keyboard.press('a')
                     if key == ord('a'):
